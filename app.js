@@ -29,7 +29,7 @@ function saveAdmins() {
 
 function showToast(message) {
     let toast = document.getElementById('toast');
-    if (!toast) {
+    if(!toast) {
         toast = document.createElement('div');
         toast.id = 'toast';
         toast.className = 'toast';
@@ -82,7 +82,7 @@ function renderDashboard() {
 
 function renderForm(type) {
     const app = getApp();
-
+    
     // Extract unique previous users for autocomplete
     const recentUsers = logs.filter(log => log.type === type);
     const uniqueUsersMap = new Map();
@@ -91,10 +91,10 @@ function renderForm(type) {
             uniqueUsersMap.set(user.name.toLowerCase(), user);
         }
     });
-
+    
     const uniqueUsersList = Array.from(uniqueUsersMap.values());
     const datalistOptions = uniqueUsersList.map(u => `<option value="${u.name}">`).join('');
-
+    
     let extraFields = '';
     if (type === 'Staff') {
         extraFields = `
@@ -150,16 +150,16 @@ function renderForm(type) {
 function handleNameInput(type) {
     const nameInput = document.getElementById('field-name').value.trim();
     if (!nameInput) return;
-
+    
     const match = logs.find(log => log.type === type && log.name.toLowerCase() === nameInput.toLowerCase());
-
+    
     if (match) {
         // Autofill car optionally
         const carInput = document.getElementById('field-car');
         if (carInput && match.car && match.car !== 'N/A') {
             carInput.value = match.car;
         }
-
+        
         // Autofill specific detail
         if (type === 'Staff') {
             const roleInput = document.getElementById('field-role');
@@ -176,21 +176,21 @@ function handleNameInput(type) {
 
 function handleSignIn(e, type) {
     e.preventDefault();
-
+    
     // Save to fully uppercase text format per user request
     const name = document.getElementById('field-name').value.toUpperCase().trim();
     const carVal = document.getElementById('field-car').value.trim();
     const car = carVal ? carVal.toUpperCase() : 'N/A';
-
+    
     let specificDetail = '';
     if (type === 'Staff') specificDetail = document.getElementById('field-role').value.toUpperCase().trim();
     else if (type === 'Visitor') specificDetail = document.getElementById('field-patient').value.toUpperCase().trim();
     else if (type === 'Other Worker') specificDetail = document.getElementById('field-company').value.toUpperCase().trim();
-
+    
     const now = new Date();
     const strOffset = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
     const safeYYMMDD = strOffset.toISOString().split('T')[0];
-
+    
     const newEntry = {
         id: Date.now().toString(),
         name,
@@ -201,17 +201,17 @@ function handleSignIn(e, type) {
         timeOut: null,
         dateFilter: safeYYMMDD
     };
-
+    
     logs.unshift(newEntry);
     saveLogs();
-
+    
     showToast(`Successfully signed in!`);
     renderDashboard();
 }
 
 function renderSignOut() {
     const app = getApp();
-
+    
     app.innerHTML = `
         <div class="glass-panel">
             <button class="back-btn" onclick="renderDashboard()"><i class="fas fa-arrow-left"></i></button>
@@ -250,10 +250,10 @@ function updateSignOutTable(searchQuery = '') {
         return;
     }
 
-    const matchedLogs = logs.filter(log =>
+    const matchedLogs = logs.filter(log => 
         log.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-
+    
     let rows = matchedLogs.map(log => {
         let actionCell = '';
         if (log.timeOut === null) {
@@ -261,7 +261,7 @@ function updateSignOutTable(searchQuery = '') {
         } else {
             actionCell = `<button class="action-btn" style="background: var(--success);" onclick="alert('No action required. You signed out at ' + '${log.timeOut}')">Signed Out</button>`;
         }
-
+        
         return `
         <tr>
             <td>${log.name}</td>
@@ -271,19 +271,19 @@ function updateSignOutTable(searchQuery = '') {
         </tr>
         `;
     }).join('');
-
-    if (matchedLogs.length === 0) {
+    
+    if(matchedLogs.length === 0) {
         // Simple XSS safeguard for innerHTML
         const safeQuery = searchQuery.replace(/</g, "&lt;").replace(/>/g, "&gt;");
         rows = `<tr><td colspan="4" style="text-align:center">No records found matching "${safeQuery}".</td></tr>`;
     }
-
+    
     tbody.innerHTML = rows;
 }
 
 function handleSignOut(id) {
     const logIndex = logs.findIndex(l => l.id === id);
-    if (logIndex > -1) {
+    if(logIndex > -1) {
         logs[logIndex].timeOut = new Date().toLocaleString();
         saveLogs();
         showToast('Successfully signed out!');
@@ -322,10 +322,10 @@ function handleManagerLogin(e) {
     e.preventDefault();
     const name = document.getElementById('field-admin-name').value.trim();
     const pw = document.getElementById('field-password').value.trim();
-
+    
     // Case-insensitive match allows email input flexibility
     const adminMatch = admins.find(a => a.name.toLowerCase() === name.toLowerCase() && a.pin === pw);
-
+    
     if (adminMatch) {
         loggedInAdmin = adminMatch;
         showToast(`Welcome, ${adminMatch.name}!`);
@@ -337,15 +337,15 @@ function handleManagerLogin(e) {
 
 function renderAdmin() {
     const app = getApp();
-
+    
     let todayStr = '';
     try {
         const offset = new Date().getTimezoneOffset() * 60000;
         todayStr = new Date(Date.now() - offset).toISOString().split('T')[0];
-    } catch (e) {
+    } catch(e) {
         console.error(e);
     }
-
+    
     app.innerHTML = `
         <div class="glass-panel" id="admin-view" style="max-width: 900px;">
             <button class="back-btn" onclick="renderDashboard()"><i class="fas fa-arrow-left"></i></button>
@@ -408,7 +408,7 @@ function renderAdmin() {
             </div>
         </div>
     `;
-
+    
     // Slight delay safely allows the browser to paint the DOM before processing intensive loops
     setTimeout(updateAdminTable, 20);
 }
@@ -417,62 +417,62 @@ function updateAdminTable() {
     try {
         const tbody = document.getElementById('admin-tbody');
         if (!tbody) return;
-
+        
         const searchEl = document.getElementById('admin-search');
         const dateEl = document.getElementById('admin-date-filter');
         const catEl = document.getElementById('admin-category-filter');
-
+        
         const query = (searchEl ? searchEl.value : '').toLowerCase().trim();
         const dateFilter = dateEl ? dateEl.value : '';
         const categoryFilter = catEl ? catEl.value : 'All';
-
+        
         const matchedLogs = logs.filter(log => {
             if (!log) return false;
-
+            
             if (categoryFilter !== 'All' && log.type !== categoryFilter) return false;
-
+            
             if (dateFilter) {
                 let isDateMatch = false;
-
+                
                 // 1. Strict YYYY-MM-DD match for newly authenticated logs
                 if (log.dateFilter && log.dateFilter === dateFilter) {
                     isDateMatch = true;
-                }
+                } 
                 // 2. Legacy parsing fallback for older logs
                 else if (log.timeIn) {
                     const filterLocalStr = new Date(dateFilter + 'T12:00:00').toLocaleDateString();
                     const logDateVal = new Date(log.timeIn);
-
+                    
                     if (!isNaN(logDateVal)) {
                         const logYYMMDD = new Date(logDateVal.getTime() - logDateVal.getTimezoneOffset() * 60000).toISOString().split('T')[0];
                         if (logYYMMDD === dateFilter) isDateMatch = true;
                     }
-
+                    
                     if (!isDateMatch && (log.timeIn.startsWith(filterLocalStr) || log.timeIn.includes(filterLocalStr))) {
                         isDateMatch = true;
                     }
                 }
-
+                
                 // If it failed all strict matching fallbacks, filter it OUT
                 if (!isDateMatch) return false;
             }
-
+            
             if (!query) return true;
-
+            
             const nMatch = log.name && typeof log.name === 'string' && log.name.toLowerCase().includes(query);
             const tMatch = log.type && typeof log.type === 'string' && log.type.toLowerCase().includes(query);
             const dMatch = log.specificDetail && typeof log.specificDetail === 'string' && log.specificDetail.toLowerCase().includes(query);
             const cMatch = log.car && typeof log.car === 'string' && log.car.toLowerCase().includes(query);
-
+            
             return nMatch || tMatch || dMatch || cMatch;
         });
 
         const staff = matchedLogs.filter(l => l.type === 'Staff');
         const visitors = matchedLogs.filter(l => l.type === 'Visitor');
         const others = matchedLogs.filter(l => l.type === 'Other Worker');
-
+        
         let rows = '';
-
+        
         function renderGroup(groupLogs, title) {
             if (groupLogs.length === 0) return '';
             let groupHtml = `<tr><td colspan="7" style="text-align: center; font-weight: bold; font-size: 1.1rem; letter-spacing: 2px; padding: 0.75rem; background: rgba(255, 255, 255, 0.15);">${title}</td></tr>`;
@@ -496,11 +496,11 @@ function updateAdminTable() {
             `).join('');
             return groupHtml;
         }
-
+        
         rows += renderGroup(staff, '— STAFF LOGS —');
         rows += renderGroup(visitors, '— VISITOR LOGS —');
         rows += renderGroup(others, '— OTHER WORKERS —');
-
+        
         if (rows === '') {
             if (logs.length === 0) {
                 rows = `<tr><td colspan="7" style="text-align:center">No logs found.</td></tr>`;
@@ -512,10 +512,10 @@ function updateAdminTable() {
         }
 
         tbody.innerHTML = rows;
-    } catch (e) {
+    } catch(e) {
         console.error("Error drawing table:", e);
         const tbody = document.getElementById('admin-tbody');
-        if (tbody) tbody.innerHTML = `<tr><td colspan="7" style="color:#EF4444;text-align:center">Error rendering logs. Format invalid.</td></tr>`;
+        if(tbody) tbody.innerHTML = `<tr><td colspan="7" style="color:#EF4444;text-align:center">Error rendering logs. Format invalid.</td></tr>`;
     }
 }
 
@@ -535,7 +535,7 @@ function deleteLog(id) {
 function clearLogs() {
     const pw = prompt(`SECURITY CHECK: Please enter the PIN for ${loggedInAdmin.name} to delete ALL records:`);
     if (pw === loggedInAdmin.pin) {
-        if (confirm("WARNING: Are you absolutely sure you want to permanently delete all records?")) {
+        if(confirm("WARNING: Are you absolutely sure you want to permanently delete all records?")) {
             logs = [];
             saveLogs();
             showToast("All logs cleared.");
@@ -607,23 +607,23 @@ function handleAddAdmin(e) {
     e.preventDefault();
     const name = document.getElementById('new-admin-name').value.trim();
     const pin = document.getElementById('new-admin-pin').value.trim();
-
+    
     const exists = admins.find(a => a.name.toLowerCase() === name.toLowerCase());
     if (exists) {
         showToast('An Admin with this name already exists!');
         return;
     }
-
+    
     admins.push({ name, pin });
     saveAdmins();
-
+    
     showToast(`${name} successfully added as Admin!`);
     renderAdmin();
 }
 
 function renderRemoveAdmin() {
     const app = getApp();
-
+    
     let adminRows = admins.map((a, i) => `
         <tr>
             <td>${a.name}</td>
@@ -632,7 +632,7 @@ function renderRemoveAdmin() {
             </td>
         </tr>
     `).join('');
-
+    
     app.innerHTML = `
         <div class="glass-panel" style="max-width: 600px;">
             <button class="back-btn" onclick="renderAdmin()"><i class="fas fa-arrow-left"></i></button>
@@ -673,7 +673,7 @@ function deleteAdmin(index) {
 function renderEditLog(id) {
     const log = logs.find(l => l.id === id);
     if (!log) return;
-
+    
     const app = getApp();
     app.innerHTML = `
         <div class="glass-panel" style="max-width: 600px;">
@@ -755,8 +755,8 @@ function secureRenderEditLog(id) {
 
 function inlineEditDate(id, type, val) {
     const logIndex = logs.findIndex(l => l.id === id);
-    if (logIndex === -1) return;
-
+    if(logIndex === -1) return;
+    
     if (type === 'in') {
         logs[logIndex].timeIn = val;
     } else {
@@ -770,22 +770,22 @@ function handleEditLog(e, id) {
     e.preventDefault();
     const logIndex = logs.findIndex(l => l.id === id);
     if (logIndex === -1) return;
-
+    
     // Auth was previously completed via secureRenderEditLog
     logs[logIndex].name = document.getElementById('edit-name').value.toUpperCase().trim();
     logs[logIndex].type = document.getElementById('edit-type').value.trim();
     logs[logIndex].specificDetail = document.getElementById('edit-detail').value.toUpperCase().trim();
-
+    
     const carVal = document.getElementById('edit-car').value.trim();
     logs[logIndex].car = carVal ? carVal.toUpperCase() : 'N/A';
-
+    
     logs[logIndex].timeIn = document.getElementById('edit-time-in').value.trim();
-
+    
     const tOut = document.getElementById('edit-time-out').value.trim();
     logs[logIndex].timeOut = tOut || null;
-
+    
     logs[logIndex].dateFilter = document.getElementById('edit-date-filter').value;
-
+    
     saveLogs();
     showToast("Log successfully updated.");
     renderAdmin();
@@ -795,20 +795,20 @@ function handleEditLog(e, id) {
 document.addEventListener('DOMContentLoaded', renderDashboard);
 
 // Fix for print view to show the hidden header
-window.onbeforeprint = function () {
+window.onbeforeprint = function() {
     const el = document.getElementById('print-header');
-    if (el) {
+    if(el) {
         el.style.display = 'block';
         const catFilter = document.getElementById('admin-category-filter');
         let titleText = 'Spinneyfield Sign-In Logs';
         if (catFilter && catFilter.value !== 'All') {
-            titleText = `Spinneyfield ${catFilter.value} Logs`;
-            if (catFilter.value === 'Visitor') titleText = 'Spinneyfield Patient Visitor Logs';
+             titleText = `Spinneyfield ${catFilter.value} Logs`;
+             if (catFilter.value === 'Visitor') titleText = 'Spinneyfield Patient Visitor Logs';
         }
         el.innerHTML = `${titleText}<br><span id="print-time" style="font-size: 16px; font-weight: normal; color: #555;">Printed on: ${new Date().toLocaleString()}</span>`;
     }
 };
-window.onafterprint = function () {
+window.onafterprint = function() {
     const el = document.getElementById('print-header');
-    if (el) el.style.display = 'none';
+    if(el) el.style.display = 'none';
 };

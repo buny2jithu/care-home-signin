@@ -1,0 +1,374 @@
+:root {
+    --primary: #0EA5E9;
+    --primary-hover: #0284C7;
+    --text-main: #FFFFFF;
+    --text-muted: #E0F2FE;
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --glass-shadow: 0 16px 40px 0 rgba(0, 0, 0, 0.4);
+    --glass-blur: blur(20px);
+    --success: #10B981;
+    --danger: #EF4444;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+.live-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.live-bg iframe {
+    width: 100vw;
+    height: 56.25vw;
+    min-height: 100vh;
+    min-width: 177.77vh;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.live-bg-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Colorful premium overlay to make the video pop */
+    background: linear-gradient(-45deg, rgba(236, 72, 153, 0.4), rgba(56, 189, 248, 0.4), rgba(16, 185, 129, 0.4), rgba(139, 92, 246, 0.4));
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+body {
+    min-height: 100vh;
+    background: transparent;
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+}
+
+/* Glass Container Base */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 24px;
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 600px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Typography */
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+p.subtitle {
+    text-align: center;
+    color: var(--text-muted);
+    margin-bottom: 2.5rem;
+    font-size: 1.1rem;
+}
+
+/* Grid Layout for Dashboard Buttons */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 480px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Glass Buttons */
+.glass-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    padding: 1.5rem 1rem;
+    color: var(--text-main);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+}
+
+.glass-btn i {
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.glass-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.glass-btn.danger {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.glass-btn.danger:hover {
+    background: rgba(239, 68, 68, 0.3);
+}
+
+.glass-btn.admin {
+    background: rgba(255, 255, 255, 0.1);
+    margin-top: 1.5rem;
+    grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: center;
+    padding: 1rem;
+}
+
+/* Forms */
+.form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.glass-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    text-transform: uppercase;
+}
+
+input[type="password"].glass-input {
+    text-transform: none;
+}
+
+.glass-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.inline-edit {
+    width: 140px;
+    padding: 0.35rem 0.5rem;
+    font-size: 0.85rem;
+    text-transform: none;
+    text-align: center;
+}
+
+@media print {
+    .inline-edit {
+        background: none !important;
+        border: none !important;
+        color: black !important;
+        padding: 0 !important;
+        width: auto !important;
+    }
+    .inline-edit::placeholder {
+        color: transparent !important;
+    }
+}
+
+.glass-input:focus {
+    outline: none;
+    background: rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 15px rgba(255,255,255,0.1);
+}
+
+.submit-btn {
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+.submit-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.3);
+}
+
+.back-btn {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.back-btn:hover {
+    transform: translateX(-5px);
+}
+
+/* Table Style for Admin View */
+.table-container {
+    overflow-x: auto;
+    margin-top: 1.5rem;
+    background: rgba(0,0,0,0.2);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.glass-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.glass-table th, .glass-table td {
+    padding: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.glass-table th {
+    font-weight: 600;
+    color: rgba(255,255,255,0.8);
+}
+
+.glass-table tbody tr:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+.action-btn {
+    background: var(--danger);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.action-btn:hover {
+    background: #DC2626;
+}
+
+.action-btn.print {
+    background: var(--success);
+    margin-bottom: 1rem;
+}
+.action-btn.print:hover {
+    background: #059669;
+}
+
+.toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--success);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    opacity: 0;
+    z-index: 9999;
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+/* Print Stylesheet */
+@media print {
+    body {
+        background: white !important;
+        animation: none;
+        color: black !important;
+        padding: 0;
+        display: block;
+    }
+    .glass-panel {
+        background: none;
+        box-shadow: none;
+        border: none;
+        max-width: 100%;
+        padding: 0;
+        backdrop-filter: none;
+    }
+    .back-btn, .action-btn, #admin-view h1, .table-container, .no-print {
+        /* Adjust for print */
+    }
+    .no-print {
+        display: none !important;
+    }
+    .back-btn, .action-btn.print {
+        display: none !important;
+    }
+    .table-container {
+        background: none;
+        padding: 0;
+    }
+    .glass-table th, .glass-table td {
+        border-bottom: 1px solid #ccc;
+        color: black !important;
+    }
+    .action-btn {
+        display: none;
+    }
+    th.no-print, td.no-print {
+        display: none; /* Hide actions column in print */
+    }
+}
